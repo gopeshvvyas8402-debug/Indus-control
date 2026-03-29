@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User & Role Management | Calibration Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js" crossorigin="anonymous"></script>
+
+</head>
+<body data-page="user-management">
+    <div class="loading-screen" id="loadingScreen" aria-live="polite">
+        <div class="loader"></div>
+        <h2 style="color: white; margin-top: 20px;">Calibration Portal</h2>
+        <p style="color: rgba(255, 255, 255, 0.7); margin-top: 10px;">Preparing interface...</p>
+    </div>
+    <div class="fab" id="fab" tabindex="0" aria-label="Quick actions"><i class="fas fa-plus"></i></div>
+    <div class="app-container">
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu"><i class="fas fa-bars"></i></button>
+        <nav class="sidebar" id="sidebar" aria-label="Primary navigation">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-tachometer-alt"></i> Calibration Portal</h2>
+            </div>
+            <div class="sidebar-search">
+                <input type="text" class="search-box" placeholder="Search modules and features..." id="sidebarSearch" aria-label="Search navigation" />
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+    <a href="index.html" class="nav-link" data-page-id="dashboard">
+        <span style="display:flex;align-items:center;gap:0.75rem;"><i class="fas fa-tachometer-alt"></i><span class="nav-text">Dashboard</span></span>
+        
+    </a>
+    
+</li><li class="nav-item">
+    <a href="customer.html" class="nav-link" data-page-id="customer">
+        <span style="display:flex;align-items:center;gap:0.75rem;"><i class="fas fa-users"></i><span class="nav-text">Customer Management</span></span>
+        <i class="fas fa-chevron-right nav-arrow"></i>
+    </a>
+    <ul class="submenu">
+    <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="customer-list">Customer List</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="add-customer">Add/Edit Customer</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="customer-contact">Customer Contact Info</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="linked-plants">Linked Plants Overview</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="customer-contracts">Customer Contracts</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="service-agreements">Manage Service Agreements</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="contract-renewals">View Contract Terms and Renewals</a></li>
+</ul>
+</li><li class="nav-item">
+    <a href="plant.html" class="nav-link" data-page-id="plant">
+        <span style="display:flex;align-items:center;gap:0.75rem;"><i class="fas fa-industry"></i><span class="nav-text">Plant Management</span></span>
+        <i class="fas fa-chevron-right nav-arrow"></i>
+    </a>
+    <ul class="submenu">
+    <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="plant-list">Plant List</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="add-plant">Add/Edit Plant</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="plant-locations">Plant Locations and Maps</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="assigned-equipment">Assigned Equipment Summary</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="plant-documents">Plant Documents</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="site-manuals">Upload Site-Specific Manuals</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="compliance-records">Compliance and Safety Records</a></li>
+</ul>
+</li><li class="nav-item">
+    <a href="equipment.html" class="nav-link" data-page-id="equipment">
+        <span style="display:flex;align-items:center;gap:0.75rem;"><i class="fas fa-cogs"></i><span class="nav-text">Equipment Management</span></span>
+        <i class="fas fa-chevron-right nav-arrow"></i>
+    </a>
+    <ul class="submenu">
+    <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="equipment-inventory">Equipment Inventory</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="add-equipment">Add/Edit Equipment</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="equipment-specs">Equipment Specifications</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="lifecycle-status">Equipment Lifecycle Status</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="equipment-history">Equipment History</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="service-history">Full Service History</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="calibration-logs">Calibration Logs</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="document-attachments">Document Attachments</a></li>
+</ul>
+</li><li class="nav-item">
+    <a href="calibration.html" class="nav-link" data-page-id="calibration">
+        <span style="display:flex;align-items:center;gap:0.75rem;"><i class="fas fa-ruler-combined"></i><span class="nav-text">Calibration Management</span></span>
+        <i class="fas fa-chevron-right nav-arrow"></i>
+    </a>
+    <ul class="submenu">
+    <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="calibration-schedule">Calibration Schedule</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="calendar-view">Calendar View</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="upcoming-calibrations">Upcoming Calibrations by Date</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="calibration-records">Calibration Records</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="log-calibration">Log New Calibration</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="calibration-certificates">View/Print Calibration Certificates</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="assign-tasks">Assign Calibration Tasks to Technicians</a></li>
+</ul>
+</li><li class="nav-item">
+    <a href="service.html" class="nav-link" data-page-id="service">
+        <span style="display:flex;align-items:center;gap:0.75rem;"><i class="fas fa-tools"></i><span class="nav-text">Service & Maintenance</span></span>
+        <i class="fas fa-chevron-right nav-arrow"></i>
+    </a>
+    <ul class="submenu">
+    <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="service-requests">Service Requests</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="new-service-request">Create New Service Request</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="track-requests">Track Open and Closed Requests</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="maintenance-logs">Maintenance Logs</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="routine-maintenance">Routine Maintenance Records</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="emergency-repairs">Emergency Repair History</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="parts-inventory">Parts Used and Inventory Updates</a></li>
+</ul>
+</li><li class="nav-item">
+    <a href="installation.html" class="nav-link" data-page-id="installation">
+        <span style="display:flex;align-items:center;gap:0.75rem;"><i class="fas fa-hard-hat"></i><span class="nav-text">Installation & Commissioning</span></span>
+        <i class="fas fa-chevron-right nav-arrow"></i>
+    </a>
+    <ul class="submenu">
+    <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="installation-scheduler">Installation Scheduler</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="plan-installations">Plan New Installations</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="track-installs">Track In-Progress Installs</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="commissioning-reports">Commissioning Reports</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="commissioning-certificates">Generate and Store Commissioning Certificates</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="technician-assignments">Field Technician Assignments and Logs</a></li>
+</ul>
+</li><li class="nav-item">
+    <a href="procurement.html" class="nav-link" data-page-id="procurement">
+        <span style="display:flex;align-items:center;gap:0.75rem;"><i class="fas fa-shopping-cart"></i><span class="nav-text">Procurement & Inventory</span></span>
+        <i class="fas fa-chevron-right nav-arrow"></i>
+    </a>
+    <ul class="submenu">
+    <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="purchase-requests">Purchase Requests (PR)</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="new-pr">Submit New PR</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="approval-workflow">Approval Workflow</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="purchase-orders">Purchase Orders (PO)</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="create-po">Create and Track POs</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="link-po">Link POs to Equipment or Parts</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="inventory-management">Inventory Management</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="stock-levels">View Stock Levels</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="low-stock-alerts">Automatic Alerts for Low Stock</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="spare-parts">Manage Spare Parts and Supplies</a></li>
+</ul>
+</li><li class="nav-item">
+    <a href="document.html" class="nav-link" data-page-id="document">
+        <span style="display:flex;align-items:center;gap:0.75rem;"><i class="fas fa-folder"></i><span class="nav-text">Document Management</span></span>
+        <i class="fas fa-chevron-right nav-arrow"></i>
+    </a>
+    <ul class="submenu">
+    <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="document-library">Document Library</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="upload-documents">Upload and Categorize Documents</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="access-control">Access Control for Sensitive Documents</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="client-portal">Client Document Portal</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="view-documents">Allow Clients to View/Download Their Specific Documents</a></li>
+</ul>
+</li><li class="nav-item">
+    <a href="analytics.html" class="nav-link" data-page-id="analytics">
+        <span style="display:flex;align-items:center;gap:0.75rem;"><i class="fas fa-chart-bar"></i><span class="nav-text">Analytics & Reporting</span></span>
+        <i class="fas fa-chevron-right nav-arrow"></i>
+    </a>
+    <ul class="submenu">
+    <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="custom-reports">Custom Reports</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="service-efficiency">Generate Reports on Service Efficiency</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="equipment-performance">Equipment Performance Reports</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="dashboard-analytics">Dashboard Analytics</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="visualize-trends">Visualize Data Trends and KPIs</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="usage-statistics">Usage Statistics</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="track-usage">Track How the System is Used</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="improvement-areas">Identify Areas for Improvement</a></li>
+</ul>
+</li><li class="nav-item">
+    <a href="user-management.html" class="nav-link active" data-page-id="user-management">
+        <span style="display:flex;align-items:center;gap:0.75rem;"><i class="fas fa-user-shield"></i><span class="nav-text">User & Role Management</span></span>
+        <i class="fas fa-chevron-right nav-arrow"></i>
+    </a>
+    <ul class="submenu expanded">
+    <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="user-list">User List</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="add-edit-users">Add/Edit Users</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="assign-roles">Assign Roles and Permissions</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="audit-logs">Audit Logs</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="track-user-activity">Track User Activity</a></li><li class="submenu-item"><a href="#" class="submenu-link" data-submodule="security-reports">Security and Access Reports</a></li>
+</ul>
+</li>
+            </ul>
+        </nav>
+        <main class="main-content" id="mainContent">
+            <header class="header">
+                <div class="header-left">
+                    <h1>Calibration Maintenance Portal</h1>
+                    <p>Professional calibration and maintenance management system</p>
+                </div>
+                <div class="header-actions">
+                    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme"><i class="fas fa-moon"></i><span>Dark Mode</span></button>
+                    <div class="user-profile" id="userProfile" tabindex="0" aria-label="User profile"><div class="user-avatar">JD</div><div class="user-info"><div class="user-name">John Doe</div><div class="user-role">System Administrator</div></div></div>
+                </div>
+            </header>
+            <div id="pageContent"></div>
+        </main>
+    </div>
+    <script type="module" src="assets/js/app.js"></script>
+</body>
+</html>

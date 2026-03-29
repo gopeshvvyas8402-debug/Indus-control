@@ -1,0 +1,2176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calibration Maintenance Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --sidebar-gradient: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            --dashboard-gradient: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --warning-gradient: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+            --danger-gradient: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            --info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --sidebar-width: 280px;
+            --header-height: 80px;
+            --transition-speed: 0.3s;
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --hover-bg: rgba(0, 0, 0, 0.05);
+            --active-bg: rgba(96, 165, 250, 0.15);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-theme {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --card-bg: rgba(30, 41, 59, 0.95);
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --hover-bg: rgba(255, 255, 255, 0.05);
+            --active-bg: rgba(96, 165, 250, 0.2);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            transition: all var(--transition-speed) ease;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Loading screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--sidebar-gradient);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loader {
+            width: 70px;
+            height: 70px;
+            border: 5px solid rgba(102, 126, 234, 0.2);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Header */
+        .header {
+            height: var(--header-height);
+            background: var(--card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2.5rem;
+            box-shadow: var(--shadow);
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: var(--sidebar-width);
+            z-index: 100;
+            transition: all var(--transition-speed) ease;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-left h1 {
+            font-size: 1.9rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .header-left p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        /* Header actions */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            background: var(--hover-bg);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .user-profile:hover {
+            background: var(--active-bg);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Theme toggle */
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            background: var(--hover-bg);
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .theme-toggle:hover {
+            background: var(--active-bg);
+            border-color: rgba(102, 126, 234, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .theme-toggle i {
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle span {
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-gradient);
+            color: #e2e8f0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            overflow-y: auto;
+            padding: 1.5rem 0;
+            transition: transform var(--transition-speed) ease;
+            z-index: 1000;
+            box-shadow: 5px 0 25px rgba(0, 0, 0, 0.2);
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-header h2 {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .sidebar-header h2 i {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .sidebar-search {
+            padding: 0 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+        }
+
+        .search-box::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Navigation */
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.85rem 1.5rem;
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(90deg, rgba(96, 165, 250, 0.2), transparent);
+            color: white;
+            border-left: 4px solid;
+            border-image: var(--primary-gradient) 1;
+        }
+
+        .nav-link i {
+            width: 24px;
+            text-align: center;
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link:hover i {
+            transform: scale(1.1);
+        }
+
+        .nav-text {
+            flex-grow: 1;
+            font-size: 0.95rem;
+        }
+
+        .nav-badge {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .nav-arrow {
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-arrow.rotated {
+            transform: rotate(90deg);
+        }
+
+        /* Submenu */
+        .submenu {
+            list-style: none;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .submenu.expanded {
+            max-height: 500px;
+        }
+
+        .submenu-item {
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            margin-left: 2.5rem;
+        }
+
+        .submenu-link {
+            display: block;
+            padding: 0.7rem 1.5rem;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .submenu-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Tooltip */
+        .nav-link .tooltip,
+        .submenu-link .tooltip {
+            display: none;
+        }
+
+        /* Main content */
+        .main-content {
+            flex: 1;
+            padding: calc(var(--header-height) + 2rem) 2.5rem 2.5rem;
+            margin-left: var(--sidebar-width);
+            transition: all var(--transition-speed) ease;
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        /* Quick Links Section */
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .quick-link-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .quick-link-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .quick-link-card:active {
+            transform: translateY(-2px);
+        }
+
+        .quick-link-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            background: var(--primary-gradient);
+            margin-bottom: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .quick-link-card:hover .quick-link-icon {
+            transform: rotate(15deg) scale(1.1);
+        }
+
+        .quick-link-card h3 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .quick-link-card p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* Welcome section */
+        .welcome-section {
+            margin-bottom: 2.5rem;
+            border-radius: 15px;
+            padding: 2rem;
+            background: var(--dashboard-gradient);
+            color: white;
+            box-shadow: var(--shadow);
+        }
+
+        .welcome-section h2 {
+            font-size: 2.2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .welcome-section p {
+            max-width: 800px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        /* Dashboard widgets */
+        .dashboard-widgets {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.8rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .widget {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 1.8rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .widget:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .widget-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.2rem;
+        }
+
+        .widget-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .widget-icon {
+            width: 55px;
+            height: 55px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            color: white;
+            background: var(--primary-gradient);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            transition: transform 0.3s ease;
+        }
+
+        .widget:hover .widget-icon {
+            transform: scale(1.1);
+        }
+
+        .widget-content {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+
+        .stat {
+            text-align: center;
+            position: relative;
+            padding: 0.5rem;
+            flex: 1;
+        }
+
+        .stat::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1px;
+            height: 40px;
+            background: var(--border-color);
+        }
+
+        .stat:last-child::after {
+            display: none;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Progress bar */
+        .progress-container {
+            margin-top: 1.5rem;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-gradient);
+            border-radius: 4px;
+            width: 0;
+            transition: width 1s ease-out;
+        }
+
+        /* Notifications */
+        .notifications-section {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-top: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.8rem;
+            font-size: 1.4rem;
+            color: var(--text-primary);
+        }
+
+        .section-title i {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .notification-list {
+            list-style: none;
+        }
+
+        .notification-item {
+            padding: 1.2rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: flex-start;
+            gap: 1.2rem;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .notification-item:hover {
+            background: var(--hover-bg);
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(96, 165, 250, 0.1);
+            color: #667eea;
+            flex-shrink: 0;
+            font-size: 1.2rem;
+        }
+
+        .notification-content h4 {
+            color: var(--text-primary);
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+        }
+
+        .notification-content p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .notification-time {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Status badges */
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .status-high {
+            background: var(--danger-gradient);
+            color: white;
+        }
+
+        .status-medium {
+            background: var(--warning-gradient);
+            color: white;
+        }
+
+        .status-low {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        /* Module Content */
+        .module-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .module-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Mobile menu toggle */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            z-index: 1100;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            width: 45px;
+            height: 45px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* Floating action button */
+        .fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.5);
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.7);
+        }
+
+        /* Notification toast */
+        .notification-toast {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: var(--shadow);
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+            border-left: 4px solid #667eea;
+            max-width: 350px;
+            border: 1px solid var(--border-color);
+        }
+
+        .notification-toast.info {
+            border-left-color: #667eea;
+        }
+
+        .notification-toast.success {
+            border-left-color: #38ef7d;
+        }
+
+        .notification-toast.warning {
+            border-left-color: #f7971e;
+        }
+
+        .notification-toast.error {
+            border-left-color: #ff416c;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1200px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .header {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+
+            .menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .dashboard-widgets {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+            
+            .quick-links {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            }
+            
+            .header {
+                padding: 0 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 0 1.5rem;
+                height: auto;
+                min-height: var(--header-height);
+                padding-top: 1rem;
+                padding-bottom: 1rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .header-left {
+                width: 100%;
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .user-info {
+                display: none;
+            }
+
+            .main-content {
+                padding: calc(var(--header-height) + 1.5rem) 1.5rem 1.5rem;
+            }
+
+            .dashboard-widgets {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-links {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .header-left h1 {
+                font-size: 1.6rem;
+            }
+
+            .theme-toggle span {
+                display: none;
+            }
+
+            .welcome-section h2 {
+                font-size: 1.8rem;
+            }
+
+            .stats {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .stat::after {
+                display: none;
+            }
+
+            .menu-toggle {
+                top: 1rem;
+                left: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .quick-links {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                padding: 1rem;
+            }
+            
+            .welcome-section {
+                padding: 1.5rem;
+            }
+            
+            .welcome-section h2 {
+                font-size: 1.5rem;
+            }
+            
+            .notification-toast {
+                left: 1rem;
+                right: 1rem;
+                max-width: calc(100% - 2rem);
+            }
+            
+            .fab {
+                bottom: 1rem;
+                right: 1rem;
+            }
+        }
+
+        /* Animation classes */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        /* Quick actions menu */
+        .quick-actions-menu {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            z-index: 10000;
+            width: 280px;
+            overflow: hidden;
+            animation: slideUp 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .quick-actions-header {
+            padding: 1.5rem;
+            background: var(--primary-gradient);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quick-actions-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .close-actions {
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .close-actions:hover {
+            transform: rotate(90deg);
+        }
+
+        .quick-actions-list {
+            padding: 1rem;
+        }
+
+        .quick-action-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-primary);
+        }
+
+        .quick-action-item:hover {
+            background: var(--hover-bg);
+        }
+
+        .quick-action-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Performance optimizations */
+        .will-change-transform {
+            will-change: transform;
+        }
+
+        /* Focus styles for accessibility */
+        .nav-link:focus-visible,
+        .quick-link-card:focus-visible,
+        .theme-toggle:focus-visible,
+        .menu-toggle:focus-visible {
+            outline: 2px solid #667eea;
+            outline-offset: 2px;
+        }
+
+        /* Selection styles */
+        ::selection {
+            background: rgba(102, 126, 234, 0.3);
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loader"></div>
+        <h2 style="color: white; margin-top: 20px;">Calibration Portal</h2>
+        <p style="color: rgba(255, 255, 255, 0.7); margin-top: 10px;">Initializing system...</p>
+    </div>
+
+    <!-- Floating Action Button -->
+    <div class="fab" id="fab" tabindex="0" aria-label="Quick actions">
+        <i class="fas fa-plus"></i>
+    </div>
+
+    <div class="app-container">
+        <!-- Mobile menu toggle -->
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-tachometer-alt"></i> Calibration Portal</h2>
+            </div>
+            
+            <div class="sidebar-search">
+                <input type="text" class="search-box" placeholder="Search modules and features..." id="sidebarSearch" aria-label="Search navigation">
+            </div>
+            
+            <ul class="nav-menu">
+                <!-- Dashboard -->
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" data-module="dashboard" aria-current="page">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span class="nav-text">Dashboard</span>
+                    </a>
+                </li>
+                
+                <!-- Customer Management -->
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-module="customer">
+                        <i class="fas fa-users"></i>
+                        <span class="nav-text">Customer Management</span>
+                        <i class="fas fa-chevron-right nav-arrow"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="customer-list">Customer List</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="add-customer">Add/Edit Customer</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="customer-contact">Customer Contact Info</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="linked-plants">Linked Plants Overview</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="customer-contracts">Customer Contracts</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="service-agreements">Manage Service Agreements</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="contract-renewals">View Contract Terms and Renewals</a></li>
+                    </ul>
+                </li>
+                
+                <!-- Plant Management -->
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-module="plant">
+                        <i class="fas fa-industry"></i>
+                        <span class="nav-text">Plant Management</span>
+                        <i class="fas fa-chevron-right nav-arrow"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="plant-list">Plant List</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="add-plant">Add/Edit Plant</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="plant-locations">Plant Locations and Maps</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="assigned-equipment">Assigned Equipment Summary</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="plant-documents">Plant Documents</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="site-manuals">Upload Site-Specific Manuals</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="compliance-records">Compliance and Safety Records</a></li>
+                    </ul>
+                </li>
+                
+                <!-- Equipment Management -->
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-module="equipment">
+                        <i class="fas fa-cogs"></i>
+                        <span class="nav-text">Equipment Management</span>
+                        <i class="fas fa-chevron-right nav-arrow"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="equipment-inventory">Equipment Inventory</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="add-equipment">Add/Edit Equipment</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="equipment-specs">Equipment Specifications</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="lifecycle-status">Equipment Lifecycle Status</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="equipment-history">Equipment History</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="service-history">Full Service History</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="calibration-logs">Calibration Logs</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="document-attachments">Document Attachments</a></li>
+                    </ul>
+                </li>
+                
+                <!-- Calibration Management -->
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-module="calibration">
+                        <i class="fas fa-ruler-combined"></i>
+                        <span class="nav-text">Calibration Management</span>
+                        <i class="fas fa-chevron-right nav-arrow"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="calibration-schedule">Calibration Schedule</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="calendar-view">Calendar View</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="upcoming-calibrations">Upcoming Calibrations by Date</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="calibration-records">Calibration Records</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="log-calibration">Log New Calibration</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="calibration-certificates">View/Print Calibration Certificates</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="assign-tasks">Assign Calibration Tasks to Technicians</a></li>
+                    </ul>
+                </li>
+                
+                <!-- Service & Maintenance -->
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-module="service">
+                        <i class="fas fa-tools"></i>
+                        <span class="nav-text">Service & Maintenance</span>
+                        <i class="fas fa-chevron-right nav-arrow"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="service-requests">Service Requests</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="new-service-request">Create New Service Request</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="track-requests">Track Open and Closed Requests</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="maintenance-logs">Maintenance Logs</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="routine-maintenance">Routine Maintenance Records</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="emergency-repairs">Emergency Repair History</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="parts-inventory">Parts Used and Inventory Updates</a></li>
+                    </ul>
+                </li>
+                
+                <!-- Installation & Commissioning -->
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-module="installation">
+                        <i class="fas fa-hard-hat"></i>
+                        <span class="nav-text">Installation & Commissioning</span>
+                        <i class="fas fa-chevron-right nav-arrow"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="installation-scheduler">Installation Scheduler</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="plan-installations">Plan New Installations</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="track-installs">Track In-Progress Installs</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="commissioning-reports">Commissioning Reports</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="commissioning-certificates">Generate and Store Commissioning Certificates</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="technician-assignments">Field Technician Assignments and Logs</a></li>
+                    </ul>
+                </li>
+                
+                <!-- Procurement & Inventory -->
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-module="procurement">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="nav-text">Procurement & Inventory</span>
+                        <i class="fas fa-chevron-right nav-arrow"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="purchase-requests">Purchase Requests (PR)</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="new-pr">Submit New PR</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="approval-workflow">Approval Workflow</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="purchase-orders">Purchase Orders (PO)</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="create-po">Create and Track POs</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="link-po">Link POs to Equipment or Parts</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="inventory-management">Inventory Management</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="stock-levels">View Stock Levels</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="low-stock-alerts">Automatic Alerts for Low Stock</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="spare-parts">Manage Spare Parts and Supplies</a></li>
+                    </ul>
+                </li>
+                
+                <!-- Document Management -->
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-module="document">
+                        <i class="fas fa-folder"></i>
+                        <span class="nav-text">Document Management</span>
+                        <i class="fas fa-chevron-right nav-arrow"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="document-library">Document Library</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="upload-documents">Upload and Categorize Documents</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="access-control">Access Control for Sensitive Documents</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="client-portal">Client Document Portal</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="view-documents">Allow Clients to View/Download Their Specific Documents</a></li>
+                    </ul>
+                </li>
+                
+                <!-- Analytics & Reporting -->
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-module="analytics">
+                        <i class="fas fa-chart-bar"></i>
+                        <span class="nav-text">Analytics & Reporting</span>
+                        <i class="fas fa-chevron-right nav-arrow"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="custom-reports">Custom Reports</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="service-efficiency">Generate Reports on Service Efficiency</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="equipment-performance">Equipment Performance Reports</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="dashboard-analytics">Dashboard Analytics</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="visualize-trends">Visualize Data Trends and KPIs</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="usage-statistics">Usage Statistics</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="track-usage">Track How the System is Used</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="improvement-areas">Identify Areas for Improvement</a></li>
+                    </ul>
+                </li>
+                
+                <!-- User & Role Management -->
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-module="user-management">
+                        <i class="fas fa-user-shield"></i>
+                        <span class="nav-text">User & Role Management</span>
+                        <i class="fas fa-chevron-right nav-arrow"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="user-list">User List</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="add-edit-users">Add/Edit Users</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="assign-roles">Assign Roles and Permissions</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="audit-logs">Audit Logs</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="track-user-activity">Track User Activity</a></li>
+                        <li class="submenu-item"><a href="#" class="submenu-link" data-submodule="security-reports">Security and Access Reports</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h1>Calibration Maintenance Portal</h1>
+                    <p>Professional calibration and maintenance management system</p>
+                </div>
+                <div class="header-actions">
+                    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                        <i class="fas fa-moon"></i>
+                        <span>Dark Mode</span>
+                    </button>
+                    <div class="user-profile" id="userProfile" tabindex="0" aria-label="User profile">
+                        <div class="user-avatar">JD</div>
+                        <div class="user-info">
+                            <div class="user-name">John Doe</div>
+                            <div class="user-role">System Administrator</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="module-content active" id="module-dashboard">
+                <section class="welcome-section animate-on-scroll">
+                    <h2>Welcome to Calibration Portal</h2>
+                    <p>Manage all calibration, maintenance, and equipment tracking activities from a single platform. Monitor KPIs, track service requests, and ensure compliance with industry standards.</p>
+                </section>
+
+                <!-- Quick Links -->
+                <section class="quick-links animate-on-scroll">
+                    <div class="quick-link-card" data-quick-action="new-calibration" tabindex="0" role="button">
+                        <div class="quick-link-icon">
+                            <i class="fas fa-ruler-combined"></i>
+                        </div>
+                        <h3>Log New Calibration</h3>
+                        <p>Record a new calibration reading</p>
+                    </div>
+                    <div class="quick-link-card" data-quick-action="service-request" tabindex="0" role="button">
+                        <div class="quick-link-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <h3>Create Service Request</h3>
+                        <p>Submit new maintenance request</p>
+                    </div>
+                    <div class="quick-link-card" data-quick-action="view-reports" tabindex="0" role="button">
+                        <div class="quick-link-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h3>View Reports</h3>
+                        <p>Access analytics and reports</p>
+                    </div>
+                    <div class="quick-link-card" data-quick-action="equipment-check" tabindex="0" role="button">
+                        <div class="quick-link-icon">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <h3>Equipment Status</h3>
+                        <p>Check equipment calibration status</p>
+                    </div>
+                </section>
+
+                <!-- Dashboard Widgets -->
+                <div class="dashboard-widgets">
+                    <div class="widget animate-on-scroll">
+                        <div class="widget-header">
+                            <h3 class="widget-title">Upcoming Calibrations</h3>
+                            <div class="widget-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                        </div>
+                        <div class="widget-content">
+                            <p>You have <strong>12 calibrations</strong> scheduled for the next 7 days. <span class="status-badge status-high">3 high priority</span></p>
+                            <div class="progress-container">
+                                <div class="progress-label">
+                                    <span>Completion Rate</span>
+                                    <span>78%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 78%;"></div>
+                                </div>
+                            </div>
+                            <div class="stats">
+                                <div class="stat">
+                                    <div class="stat-value">12</div>
+                                    <div class="stat-label">Total</div>
+                                </div>
+                                <div class="stat">
+                                    <div class="stat-value">3</div>
+                                    <div class="stat-label">High Priority</div>
+                                </div>
+                                <div class="stat">
+                                    <div class="stat-value">7</div>
+                                    <div class="stat-label">On Schedule</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="widget animate-on-scroll">
+                        <div class="widget-header">
+                            <h3 class="widget-title">Open Service Requests</h3>
+                            <div class="widget-icon">
+                                <i class="fas fa-tools"></i>
+                            </div>
+                        </div>
+                        <div class="widget-content">
+                            <p>There are <strong>8 open service requests</strong>. <span class="status-badge status-medium">2 require immediate attention</span></p>
+                            <div class="progress-container">
+                                <div class="progress-label">
+                                    <span>Resolution Rate</span>
+                                    <span>92%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 92%;"></div>
+                                </div>
+                            </div>
+                            <div class="stats">
+                                <div class="stat">
+                                    <div class="stat-value">8</div>
+                                    <div class="stat-label">Open</div>
+                                </div>
+                                <div class="stat">
+                                    <div class="stat-value">24</div>
+                                    <div class="stat-label">This Month</div>
+                                </div>
+                                <div class="stat">
+                                    <div class="stat-value">2.1</div>
+                                    <div class="stat-label">Avg. Days</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="widget animate-on-scroll">
+                        <div class="widget-header">
+                            <h3 class="widget-title">Equipment Status</h3>
+                            <div class="widget-icon">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                        </div>
+                        <div class="widget-content">
+                            <p><strong>94% of equipment</strong> is currently active and calibrated. <span class="status-badge status-low">6 items require attention</span></p>
+                            <div class="progress-container">
+                                <div class="progress-label">
+                                    <span>Calibration Compliance</span>
+                                    <span>94%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 94%;"></div>
+                                </div>
+                            </div>
+                            <div class="stats">
+                                <div class="stat">
+                                    <div class="stat-value">328</div>
+                                    <div class="stat-label">Active</div>
+                                </div>
+                                <div class="stat">
+                                    <div class="stat-value">22</div>
+                                    <div class="stat-label">Retired</div>
+                                </div>
+                                <div class="stat">
+                                    <div class="stat-value">6</div>
+                                    <div class="stat-label">Needs Attention</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notifications Section -->
+                <div class="notifications-section animate-on-scroll">
+                    <h3 class="section-title">
+                        <i class="fas fa-bell"></i>
+                        Notifications and Alerts
+                    </h3>
+                    <ul class="notification-list">
+                        <li class="notification-item">
+                            <div class="notification-icon" style="background: rgba(255, 107, 107, 0.1); color: #ff6b6b;">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="notification-content">
+                                <h4>High Priority Calibration Due <span class="status-badge status-high">Urgent</span></h4>
+                                <p>Pressure gauge #PG-789 at Plant A requires calibration by tomorrow. Last calibrated 11 months ago.</p>
+                                <div class="notification-time"><i class="far fa-clock"></i> 2 hours ago</div>
+                            </div>
+                        </li>
+                        <li class="notification-item">
+                            <div class="notification-icon" style="background: rgba(76, 201, 240, 0.1); color: #4cc9f0;">
+                                <i class="fas fa-clipboard-check"></i>
+                            </div>
+                            <div class="notification-content">
+                                <h4>Service Request Completed <span class="status-badge status-low">Completed</span></h4>
+                                <p>Service request #SR-452 for temperature controller maintenance has been completed by technician John Doe.</p>
+                                <div class="notification-time"><i class="far fa-clock"></i> 5 hours ago</div>
+                            </div>
+                        </li>
+                        <li class="notification-item">
+                            <div class="notification-icon" style="background: rgba(72, 187, 120, 0.1); color: #48bb78;">
+                                <i class="fas fa-shipping-fast"></i>
+                            </div>
+                            <div class="notification-content">
+                                <h4>New Equipment Received <span class="status-badge status-low">Inventory</span></h4>
+                                <p>5 new multimeters have been received and added to inventory. Serial numbers recorded and ready for deployment.</p>
+                                <div class="notification-time"><i class="far fa-clock"></i> Yesterday</div>
+                            </div>
+                        </li>
+                        <li class="notification-item">
+                            <div class="notification-icon" style="background: rgba(246, 173, 85, 0.1); color: #f6ad55;">
+                                <i class="fas fa-file-contract"></i>
+                            </div>
+                            <div class="notification-content">
+                                <h4>Contract Renewal Reminder <span class="status-badge status-medium">Action Required</span></h4>
+                                <p>Service contract with ABC Manufacturing expires in 30 days. Please contact the client for renewal discussions.</p>
+                                <div class="notification-time"><i class="far fa-clock"></i> 2 days ago</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Module Content Templates -->
+            <div class="module-content" id="module-customer">
+                <div class="welcome-section">
+                    <h2>Customer Management</h2>
+                    <p>Manage customer information, contracts, and service agreements in one centralized location.</p>
+                </div>
+                <!-- Customer management content would go here -->
+            </div>
+
+            <div class="module-content" id="module-plant">
+                <div class="welcome-section">
+                    <h2>Plant Management</h2>
+                    <p>Track plant locations, assigned equipment, and site-specific documentation.</p>
+                </div>
+                <!-- Plant management content would go here -->
+            </div>
+
+            <div class="module-content" id="module-equipment">
+                <div class="welcome-section">
+                    <h2>Equipment Management</h2>
+                    <p>Monitor equipment lifecycle, service history, and calibration status across all assets.</p>
+                </div>
+                <!-- Equipment management content would go here -->
+            </div>
+
+            <div class="module-content" id="module-calibration">
+                <div class="welcome-section">
+                    <h2>Calibration Management</h2>
+                    <p>Schedule, track, and record all calibration activities with certification management.</p>
+                </div>
+                <!-- Calibration management content would go here -->
+            </div>
+
+            <div class="module-content" id="module-service">
+                <div class="welcome-section">
+                    <h2>Service & Maintenance</h2>
+                    <p>Handle service requests, maintenance logs, and repair history tracking.</p>
+                </div>
+                <!-- Service & maintenance content would go here -->
+            </div>
+
+            <div class="module-content" id="module-installation">
+                <div class="welcome-section">
+                    <h2>Installation & Commissioning</h2>
+                    <p>Manage installation projects, commissioning reports, and field technician assignments.</p>
+                </div>
+                <!-- Installation content would go here -->
+            </div>
+
+            <div class="module-content" id="module-procurement">
+                <div class="welcome-section">
+                    <h2>Procurement & Inventory</h2>
+                    <p>Handle purchase requests, manage inventory levels, and track spare parts.</p>
+                </div>
+                <!-- Procurement content would go here -->
+            </div>
+
+            <div class="module-content" id="module-document">
+                <div class="welcome-section">
+                    <h2>Document Management</h2>
+                    <p>Centralized document storage with access control and client portal capabilities.</p>
+                </div>
+                <!-- Document management content would go here -->
+            </div>
+
+            <div class="module-content" id="module-analytics">
+                <div class="welcome-section">
+                    <h2>Analytics & Reporting</h2>
+                    <p>Generate custom reports, analyze trends, and monitor KPIs for continuous improvement.</p>
+                </div>
+                <!-- Analytics content would go here -->
+            </div>
+
+            <div class="module-content" id="module-user-management">
+                <div class="welcome-section">
+                    <h2>User & Role Management</h2>
+                    <p>Manage user accounts, assign roles and permissions, and track system activity.</p>
+                </div>
+                <!-- User management content would go here -->
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // DOM Elements
+        const themeToggle = document.getElementById('themeToggle');
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const loadingScreen = document.getElementById('loadingScreen');
+        const fab = document.getElementById('fab');
+        const sidebarSearch = document.getElementById('sidebarSearch');
+        const userProfile = document.getElementById('userProfile');
+
+        // State management
+        let isSidebarOpen = false;
+        let activeModule = 'dashboard';
+        let quickActionsMenu = null;
+
+        // Performance optimization variables
+        let resizeTimeout;
+        let searchTimeout;
+
+        // Loading screen
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                loadingScreen.classList.add('hidden');
+                animateElementsOnScroll();
+                initializeProgressBars();
+            }, 800);
+        });
+
+        // Theme switching functionality
+        themeToggle.addEventListener('click', (e) => {
+            toggleTheme();
+            createClickEffect(e);
+        });
+
+        // Mobile menu toggle
+        menuToggle.addEventListener('click', (e) => {
+            toggleSidebar();
+            createClickEffect(e);
+        });
+
+        // FAB click
+        fab.addEventListener('click', (e) => {
+            toggleQuickActions();
+            createClickEffect(e);
+        });
+
+        // User profile click
+        userProfile.addEventListener('click', (e) => {
+            createClickEffect(e);
+            showNotification('Opening User Profile...', 'info');
+        });
+
+        // Sidebar search functionality with debounce
+        sidebarSearch.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                performSearch(e.target.value);
+            }, 300);
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            // Close sidebar on Escape
+            if (e.key === 'Escape' && isSidebarOpen && window.innerWidth <= 1200) {
+                toggleSidebar();
+            }
+            
+            // Close quick actions on Escape
+            if (e.key === 'Escape' && quickActionsMenu) {
+                removeQuickActions();
+            }
+            
+            // Close notification on Escape
+            const notification = document.querySelector('.notification-toast');
+            if (e.key === 'Escape' && notification) {
+                notification.remove();
+            }
+        });
+
+        // Navigation delegation
+        document.addEventListener('click', (e) => {
+            const navLink = e.target.closest('.nav-link');
+            const submenuLink = e.target.closest('.submenu-link');
+            const quickLinkCard = e.target.closest('.quick-link-card');
+            
+            if (navLink) {
+                e.preventDefault();
+                handleNavLinkClick(navLink);
+            }
+            
+            if (submenuLink) {
+                e.preventDefault();
+                handleSubmenuLinkClick(submenuLink);
+            }
+            
+            if (quickLinkCard) {
+                e.preventDefault();
+                handleQuickLinkClick(quickLinkCard);
+            }
+            
+            // Close sidebar when clicking outside on mobile
+            if (isSidebarOpen && window.innerWidth <= 1200) {
+                const isClickInsideSidebar = sidebar.contains(e.target);
+                const isClickOnMenuToggle = menuToggle.contains(e.target);
+                
+                if (!isClickInsideSidebar && !isClickOnMenuToggle) {
+                    toggleSidebar();
+                }
+            }
+        });
+
+        // Window resize handler with throttling
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(handleResize, 250);
+        });
+
+        // Functions
+        function toggleTheme() {
+            document.body.classList.toggle('dark-theme');
+            
+            const themeIcon = themeToggle.querySelector('i');
+            const themeText = themeToggle.querySelector('span');
+            
+            if (document.body.classList.contains('dark-theme')) {
+                themeIcon.className = 'fas fa-sun';
+                themeText.textContent = 'Light Mode';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeIcon.className = 'fas fa-moon';
+                themeText.textContent = 'Dark Mode';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        function toggleSidebar() {
+            isSidebarOpen = !isSidebarOpen;
+            sidebar.classList.toggle('open');
+            menuToggle.innerHTML = isSidebarOpen 
+                ? '<i class="fas fa-times"></i>' 
+                : '<i class="fas fa-bars"></i>';
+            
+            // Prevent body scroll when sidebar is open on mobile
+            document.body.style.overflow = isSidebarOpen && window.innerWidth <= 1200 ? 'hidden' : '';
+        }
+
+        function handleNavLinkClick(navLink) {
+            const module = navLink.dataset.module;
+            const hasSubmenu = navLink.querySelector('.nav-arrow');
+            
+            // Remove active class from all nav links
+            document.querySelectorAll('.nav-link.active').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Handle submenu toggle
+            if (hasSubmenu) {
+                const arrow = navLink.querySelector('.nav-arrow');
+                const submenu = navLink.nextElementSibling;
+                const isExpanded = submenu.classList.contains('expanded');
+                
+                // Close all other submenus
+                document.querySelectorAll('.submenu').forEach(menu => {
+                    if (menu !== submenu) {
+                        menu.classList.remove('expanded');
+                    }
+                });
+                
+                document.querySelectorAll('.nav-arrow').forEach(arr => {
+                    if (arr !== arrow) {
+                        arr.classList.remove('rotated');
+                    }
+                });
+                
+                // Toggle current submenu
+                submenu.classList.toggle('expanded');
+                arrow.classList.toggle('rotated');
+                navLink.classList.toggle('active');
+                
+                // Show module if expanding
+                if (!isExpanded && module) {
+                    showModule(module);
+                }
+            } else {
+                // Simple module link
+                navLink.classList.add('active');
+                
+                // Close all submenus
+                document.querySelectorAll('.submenu').forEach(menu => {
+                    menu.classList.remove('expanded');
+                });
+                
+                document.querySelectorAll('.nav-arrow').forEach(arr => {
+                    arr.classList.remove('rotated');
+                });
+                
+                // Show module
+                if (module) {
+                    showModule(module);
+                }
+            }
+        }
+
+        function handleSubmenuLinkClick(link) {
+            const submodule = link.dataset.submodule;
+            const parentLink = link.closest('.nav-item').querySelector('.nav-link');
+            const module = parentLink.dataset.module;
+            
+            // Set parent as active
+            document.querySelectorAll('.nav-link.active').forEach(link => {
+                link.classList.remove('active');
+            });
+            parentLink.classList.add('active');
+            
+            // Show module
+            showModule(module);
+            
+            // Show notification
+            showNotification(`Loading ${link.textContent.trim()}...`, 'info');
+        }
+
+        function handleQuickLinkClick(card) {
+            const action = card.dataset.quickAction;
+            
+            switch(action) {
+                case 'new-calibration':
+                    showNotification('Opening New Calibration Form...', 'info');
+                    showModule('calibration');
+                    break;
+                case 'service-request':
+                    showNotification('Creating New Service Request...', 'info');
+                    showModule('service');
+                    break;
+                case 'view-reports':
+                    showNotification('Loading Reports Dashboard...', 'info');
+                    showModule('analytics');
+                    break;
+                case 'equipment-check':
+                    showNotification('Opening Equipment Status Report...', 'info');
+                    showModule('equipment');
+                    break;
+            }
+        }
+
+        function showModule(moduleId) {
+            if (activeModule === moduleId) return;
+            
+            const selectedModule = document.getElementById(`module-${moduleId}`);
+            if (!selectedModule) return;
+            
+            // Hide all module contents
+            document.querySelectorAll('.module-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Show selected module
+            selectedModule.classList.add('active');
+            activeModule = moduleId;
+            
+            // Update page title
+            const moduleName = selectedModule.querySelector('h2')?.textContent || moduleId;
+            document.title = `${moduleName} - Calibration Maintenance Portal`;
+            
+            // Animate new content
+            animateElementsOnScroll();
+            
+            // Close sidebar on mobile
+            if (window.innerWidth <= 1200 && isSidebarOpen) {
+                toggleSidebar();
+            }
+            
+            // Scroll to top smoothly
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function performSearch(term) {
+            const searchTerm = term.toLowerCase().trim();
+            
+            if (!searchTerm) {
+                // Show all items
+                document.querySelectorAll('.nav-item, .submenu-item').forEach(item => {
+                    item.style.display = '';
+                });
+                return;
+            }
+            
+            // Search through navigation
+            document.querySelectorAll('.nav-item').forEach(navItem => {
+                const navText = navItem.querySelector('.nav-text')?.textContent.toLowerCase() || '';
+                const submenuItems = navItem.querySelectorAll('.submenu-link');
+                let hasMatch = navText.includes(searchTerm);
+                
+                // Check submenu items
+                submenuItems.forEach(subItem => {
+                    const subText = subItem.textContent.toLowerCase();
+                    if (subText.includes(searchTerm)) {
+                        hasMatch = true;
+                        subItem.closest('.submenu-item').style.display = '';
+                    } else {
+                        subItem.closest('.submenu-item').style.display = 'none';
+                    }
+                });
+                
+                // Show/hide nav item based on match
+                navItem.style.display = hasMatch ? '' : 'none';
+                
+                // Expand submenu if there's a match
+                if (hasMatch) {
+                    const submenu = navItem.querySelector('.submenu');
+                    const arrow = navItem.querySelector('.nav-arrow');
+                    if (submenu && !submenu.classList.contains('expanded')) {
+                        submenu.classList.add('expanded');
+                        if (arrow) arrow.classList.add('rotated');
+                    }
+                }
+            });
+        }
+
+        function showNotification(message, type = 'info') {
+            // Remove existing notifications
+            document.querySelectorAll('.notification-toast').forEach(notification => {
+                notification.remove();
+            });
+            
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification-toast ${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${getNotificationIcon(type)}"></i>
+                <span>${message}</span>
+                <i class="fas fa-times" onclick="this.parentElement.remove()"></i>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        function getNotificationIcon(type) {
+            const icons = {
+                'info': 'info-circle',
+                'success': 'check-circle',
+                'warning': 'exclamation-triangle',
+                'error': 'exclamation-circle'
+            };
+            return icons[type] || 'info-circle';
+        }
+
+        function toggleQuickActions() {
+            if (quickActionsMenu) {
+                removeQuickActions();
+                return;
+            }
+            
+            const actions = [
+                { icon: 'fas fa-ruler-combined', label: 'New Calibration', action: 'new-calibration' },
+                { icon: 'fas fa-tools', label: 'Service Request', action: 'service-request' },
+                { icon: 'fas fa-file-alt', label: 'New Report', action: 'new-report' },
+                { icon: 'fas fa-user-plus', label: 'Add User', action: 'add-user' },
+                { icon: 'fas fa-shopping-cart', label: 'Purchase Request', action: 'purchase-request' }
+            ];
+            
+            // Create menu
+            quickActionsMenu = document.createElement('div');
+            quickActionsMenu.className = 'quick-actions-menu';
+            quickActionsMenu.innerHTML = `
+                <div class="quick-actions-header">
+                    <h3>Quick Actions</h3>
+                    <i class="fas fa-times close-actions"></i>
+                </div>
+                <div class="quick-actions-list">
+                    ${actions.map(action => `
+                        <div class="quick-action-item" data-action="${action.action}" tabindex="0" role="button">
+                            <div class="quick-action-icon">
+                                <i class="${action.icon}"></i>
+                            </div>
+                            <span>${action.label}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            document.body.appendChild(quickActionsMenu);
+            
+            // Add event listeners
+            quickActionsMenu.querySelector('.close-actions').addEventListener('click', removeQuickActions);
+            
+            quickActionsMenu.querySelectorAll('.quick-action-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const action = item.dataset.action;
+                    showNotification(`Initiating ${item.querySelector('span').textContent}...`, 'info');
+                    removeQuickActions();
+                    
+                    switch(action) {
+                        case 'new-calibration':
+                            showModule('calibration');
+                            break;
+                        case 'service-request':
+                            showModule('service');
+                            break;
+                        case 'add-user':
+                            showModule('user-management');
+                            break;
+                        case 'purchase-request':
+                            showModule('procurement');
+                            break;
+                    }
+                });
+                
+                // Keyboard support
+                item.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        item.click();
+                    }
+                });
+            });
+            
+            // Click outside to close
+            setTimeout(() => {
+                document.addEventListener('click', function closeMenu(e) {
+                    if (!quickActionsMenu.contains(e.target) && e.target !== fab) {
+                        removeQuickActions();
+                        document.removeEventListener('click', closeMenu);
+                    }
+                });
+            }, 10);
+        }
+
+        function removeQuickActions() {
+            if (quickActionsMenu) {
+                quickActionsMenu.remove();
+                quickActionsMenu = null;
+            }
+        }
+
+        function animateElementsOnScroll() {
+            const animateElements = document.querySelectorAll('.animate-on-scroll:not(.visible)');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+            
+            animateElements.forEach(element => {
+                observer.observe(element);
+            });
+        }
+
+        function createClickEffect(event) {
+            const element = event.currentTarget;
+            if (!element) return;
+            
+            element.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                element.style.transform = '';
+            }, 150);
+        }
+
+        function initializeProgressBars() {
+            const progressFills = document.querySelectorAll('.progress-fill');
+            progressFills.forEach(fill => {
+                const width = fill.style.width;
+                fill.style.width = '0';
+                setTimeout(() => {
+                    fill.style.width = width;
+                }, 300);
+            });
+        }
+
+        function handleResize() {
+            if (window.innerWidth > 1200 && isSidebarOpen) {
+                toggleSidebar();
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load saved theme preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+                const themeIcon = themeToggle.querySelector('i');
+                const themeText = themeToggle.querySelector('span');
+                themeIcon.className = 'fas fa-sun';
+                themeText.textContent = 'Light Mode';
+            }
+            
+            // Initialize animations
+            animateElementsOnScroll();
+        });
+
+        // Add keyboard navigation support
+        fab.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                fab.click();
+            }
+        });
+
+        themeToggle.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                themeToggle.click();
+            }
+        });
+
+        userProfile.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                userProfile.click();
+            }
+        });
+
+        // Add touch support for mobile
+        document.querySelectorAll('.quick-link-card, .nav-link, .submenu-link').forEach(element => {
+            element.addEventListener('touchstart', function() {
+                this.classList.add('touch-active');
+            }, { passive: true });
+            
+            element.addEventListener('touchend', function() {
+                this.classList.remove('touch-active');
+            }, { passive: true });
+        });
+    </script>
+</body>
+</html>
