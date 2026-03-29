@@ -337,6 +337,50 @@ function renderCurrentPage() {
     pageRenderer();
 }
 
+function initializeNav() {
+    document.querySelectorAll('.nav-link').forEach((link) => {
+        const pageId = link.dataset.pageId;
+        if (pageId === currentPage) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
+        }
+    });
+}
+
+function toggleQuickActions() {
+    if (quickActionsMenu) {
+        removeQuickActions();
+        return;
+    }
+
+    quickActionsMenu = document.createElement('div');
+    quickActionsMenu.className = 'quick-actions-menu';
+    quickActionsMenu.innerHTML = `
+        <button class="quick-action-item" data-quick-action="new-calibration">New Calibration</button>
+        <button class="quick-action-item" data-quick-action="service-request">Service Request</button>
+        <button class="quick-action-item" data-quick-action="view-reports">View Reports</button>
+        <button class="quick-action-item" data-quick-action="equipment-check">Equipment Status</button>
+    `;
+    quickActionsMenu.addEventListener('click', (event) => {
+        const actionButton = event.target.closest('.quick-action-item');
+        if (!actionButton) return;
+        const action = actionButton.dataset.quickAction;
+        const target = quickCardRoutes[action];
+        if (target) {
+            window.location.href = target;
+        }
+    });
+    document.body.appendChild(quickActionsMenu);
+}
+
+function removeQuickActions() {
+    if (quickActionsMenu) {
+        quickActionsMenu.remove();
+        quickActionsMenu = null;
+    }
+}
+
 function renderDashboard() {
     const totalCustomers = getTableCount('customers');
     const totalPlants = getTableCount('plants');
